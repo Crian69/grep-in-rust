@@ -1,7 +1,8 @@
 use std::process;
 enum GroupType {
     Char,
-    Digit
+    Digit,
+    Word
 }
 pub struct Group {
     representation: String,
@@ -15,12 +16,39 @@ impl Group {
                 representation: pattern,
                 represents: GroupType::Char
             }
-        } else {
+        } else if pattern == "\\d" {
             Self {
                 representation: "\\d".to_owned(),
                 represents: GroupType::Digit
             }
+        } else {
+            Self {
+                representation: "\\w".to_owned(),
+                represents: GroupType::Word
+            }
         }
+    }
+
+    fn contains_number(text: &str) -> bool {
+        for c in text.chars(){
+            if c.is_numeric(){
+                return true
+            }
+        }
+        false
+    }
+
+    fn contains_alphabet(text: &str) -> bool {
+        for c in text.chars(){
+            if c.is_alphabetic(){
+                return true
+            }
+        }
+        false
+    }
+
+    fn contains_underscore(text: &str) -> bool {
+        text.contains('_')
     }
 
     pub fn match_text(&self, text: &str) -> () {
@@ -34,14 +62,15 @@ impl Group {
                 }
             }
             GroupType::Digit => {
-                let mut contains_number = false;
-                for c in text.chars(){
-                    if c.is_numeric(){
-                        contains_number = true;
-                        break
-                    }
-                }
+                let contains_number = Self::contains_number(text);
                 if contains_number {
+                    process::exit(0)
+                } else {
+                    process::exit(1)
+                }
+            },
+            GroupType::Word => {
+                if Self::contains_alphabet(text) || Self::contains_underscore(text) || Self::contains_number(text) {
                     process::exit(0)
                 } else {
                     process::exit(1)
