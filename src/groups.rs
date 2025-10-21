@@ -5,7 +5,7 @@ enum GroupType {
 }
 pub struct Group {
     representation: String,
-    represents: GroupType 
+    represents: GroupType
 }
 
 impl Group {
@@ -15,16 +15,16 @@ impl Group {
                 representation: pattern,
                 represents: GroupType::Char
             }
-        } else { 
+        } else {
             Self {
                 representation: "\\d".to_owned(),
                 represents: GroupType::Digit
             }
         }
     }
-    
+
     pub fn match_text(&self, text: &str) -> () {
-        match self.represents { 
+        match self.represents {
             GroupType::Char => {
                 let str = self.representation.as_str();
                 if text.contains(str) {
@@ -41,7 +41,7 @@ impl Group {
                         break
                     }
                 }
-                if (contains_number) {
+                if contains_number {
                     process::exit(0)
                 } else {
                     process::exit(1)
@@ -49,5 +49,5 @@ impl Group {
             }
         }
     }
-    
+
 }
