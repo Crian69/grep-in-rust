@@ -27,11 +27,15 @@ impl Group {
                 representation: "\\w".to_owned(),
                 represents: GroupType::Word
             }
+        } else if let (Some('['), Some(']')) = (pattern.chars().next(), pattern.chars().last()) {
+                let chars: Vec<char> = pattern.chars().collect();
+                let inner = chars[1..chars.len() - 1].to_vec();
+                Self {
+                    representation: pattern.to_owned(),
+                    represents: GroupType::Custom(inner)
+                }
         } else {
-            Self {
-                representation: pattern.to_owned(),
-                represents: GroupType::Custom(pattern.chars().collect()) 
-            }
+            unimplemented!()
         }
     }
 
