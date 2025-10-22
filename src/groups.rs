@@ -2,7 +2,8 @@ use std::process;
 enum GroupType {
     Char,
     Digit,
-    Word
+    Word,
+    Custom(Vec<char>)
 }
 pub struct Group {
     representation: String,
@@ -21,10 +22,15 @@ impl Group {
                 representation: "\\d".to_owned(),
                 represents: GroupType::Digit
             }
-        } else {
+        } else if pattern == "\\w" {
             Self {
                 representation: "\\w".to_owned(),
                 represents: GroupType::Word
+            }
+        } else {
+            Self {
+                representation: pattern.to_owned(),
+                represents: GroupType::Custom(pattern.chars().collect()) 
             }
         }
     }
@@ -52,7 +58,7 @@ impl Group {
     }
 
     pub fn match_text(&self, text: &str) -> () {
-        match self.represents {
+        match &self.represents {
             GroupType::Char => {
                 let str = self.representation.as_str();
                 if text.contains(str) {
@@ -75,6 +81,14 @@ impl Group {
                 } else {
                     process::exit(1)
                 }
+            },
+            GroupType::Custom(chars) => {
+                for c in chars {
+                    if text.contains(c.clone()){
+                        process::exit(0)
+                    }
+                }
+                process::exit(1)
             }
         }
     }
