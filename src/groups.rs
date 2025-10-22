@@ -3,7 +3,8 @@ enum GroupType {
     Char,
     Digit,
     Word,
-    Custom(Vec<char>)
+    Custom(Vec<char>),
+    NotCustom(Vec<char>)
 }
 pub struct Group {
     representation: String,
@@ -27,6 +28,13 @@ impl Group {
                 representation: "\\w".to_owned(),
                 represents: GroupType::Word
             }
+        }else if pattern.starts_with("[^") && pattern.ends_with(']') {
+            let chars: Vec<char> = pattern.chars().collect();
+            let inner = chars[2..chars.len() - 1].to_vec();
+            Self {
+                representation: pattern.to_owned(),
+                represents: GroupType::NotCustom(inner)
+            }
         } else if let (Some('['), Some(']')) = (pattern.chars().next(), pattern.chars().last()) {
                 let chars: Vec<char> = pattern.chars().collect();
                 let inner = chars[1..chars.len() - 1].to_vec();
@@ -34,7 +42,8 @@ impl Group {
                     representation: pattern.to_owned(),
                     represents: GroupType::Custom(inner)
                 }
-        } else {
+        }
+        else {
             unimplemented!()
         }
     }
@@ -89,6 +98,14 @@ impl Group {
             GroupType::Custom(chars) => {
                 for c in chars {
                     if text.contains(c.clone()){
+                        process::exit(0)
+                    }
+                }
+                process::exit(1)
+            },
+            GroupType::NotCustom(chars) => {
+                for c in chars {
+                    if !text.contains(c.clone()){
                         process::exit(0)
                     }
                 }
